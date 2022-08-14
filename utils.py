@@ -23,14 +23,8 @@ class Dataset:
         else:
             self.label_array = label_array
 
-    def get_X(self):
-        return np.hstack(self.feature_arrays)
-    
-    def get_y(self):
-        return self.label_array.flatten()
-
-    def get_feature_names(self):
-        return self.feature_names
+    def get_data(self):
+        return np.hstack(self.feature_arrays), self.label_array.flatten(), self.feature_names
 
     def reset_for_test(self):
         self.feature_arrays = []
@@ -61,9 +55,14 @@ class Dataset:
         return normalizer.transform(df[column_name].values.reshape(-1, 1))
 
 
-def one_vs_all(y):
-    y[y!=0] = 1
-    return y
+
+def one_vs_all(y, target=0):
+    if target == None:
+        return y
+    y_ = y.copy()
+    y_[y!=target] = 0
+    y_[y==target] = 1
+    return y_
 
 def plot_roc(model, X, y, model_name="model"):
     y_pred_probs, _ = get_prob_and_pred(model, X)
